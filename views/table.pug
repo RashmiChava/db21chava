@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1= title
+  - results = [{NumberOfLegs: 4, color: 'black', price: '60$'}, {NumberOfLegs: 2, color: 'white', price: '30$'},{NumberOfLegs: 3, color: 'brown', price: '50$'} ]
+  div(class="container-fluid")
+      each item in results
+        div(class="row")
+          div(class="col-sm-2", style="cursor:pointer", onclick=`buy(${index})`)   #{item.NumberOfLegs}
+          div(class="col-sm-2", style="cursor:pointer", onclick=`buy(${index})`)   #{item.color}
+          div(class="col-sm-2", style="cursor:pointer", onclick=`buy(${index})`)   #{item.price}
+  script. 
+    function buy(index) {
+      alert(`Purchased item ${index + 1}` )
+    }
