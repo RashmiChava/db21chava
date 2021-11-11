@@ -9,8 +9,26 @@ var usersRouter = require('./routes/users');
 var tableRouter = require('./routes/table');
 var addmodsRouter = require('./routes/addmods');
 var selectorRouter = require('./routes/selector');
+var Costume = require("./models/costume");
+var resource = require("./routes/resource");
+var barbie = require('./routes/barbie');
 
 var app = express();
+
+const connectionString =
+process.env.MONGO_CON
+mongoose = require('mongoose');
+mongoose.connect(connectionString,
+{useNewUrlParser: true,
+useUnifiedTopology: true});
+
+//Get the default connection
+var db = mongoose.connection;
+//Bind connection to error event
+db.on('error', console.error.bind(console, 'MongoDB connectionerror:'));
+db.once("open", function(){
+console.log("Connection to DB succeeded")});
+recreateDB();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -27,6 +45,9 @@ app.use('/users', usersRouter);
 app.use('/table', tableRouter);
 app.use('/addmods', addmodsRouter);
 app.use('/selector', selectorRouter);
+app.use('/resource', resource)
+app.use('/barbie', barbie)
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -45,3 +66,26 @@ app.use(function(err, req, res, next) {
 });
 
 module.exports = app;
+
+async function recreateDB(){
+ // Delete everything
+ await Costume.deleteMany();
+ let instance1 = new Costume({costume_type:"ghost", size:'small', cost:25.4});
+ let instance2 = new Costume({costume_type:"baby", size:'extra small', cost:20.2});
+ let instance3 = new Costume({costume_type:"men", size:'large', cost:30.4});
+
+ instance1.save( function(err,doc) {
+ if(err) return console.error(err);
+ console.log("First object saved")
+ });
+
+ instance2.save( function(err,doc) {
+  if(err) return console.error(err);
+  console.log("Second object saved")
+  });
+
+  instance3.save( function(err,doc) {
+    if(err) return console.error(err);
+    console.log("Third object saved")
+    });
+}
