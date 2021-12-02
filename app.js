@@ -12,6 +12,7 @@ var selectorRouter = require('./routes/selector');
 var Costume = require("./models/costume");
 var resource = require("./routes/resource");
 var barbie = require('./routes/barbie');
+var Account = require('./models/account'); 
 
 var app = express();
 
@@ -25,13 +26,23 @@ passport.use(new LocalStrategy(
       if (!user) { 
         return done(null, false, { message: 'Incorrect username.' }); 
       } 
-      if (!user.validPassword(password)) { 
+      console.log(user)
+      if ( user.validPassword && !user.validPassword(password)) { 
         return done(null, false, { message: 'Incorrect password.' }); 
       } 
       return done(null, user); 
     }); 
-  } 
-))
+  }))
+
+  passport.serializeUser(function(user, done) {
+    done(null, user.id);
+  });
+
+  passport.deserializeUser(function(id, done) {
+    Account.findById(id, function(err, user) {
+      done(err, user);
+    });
+  });
 
 const connectionString =
 process.env.MONGO_CON
@@ -76,7 +87,7 @@ app.use('/barbie', barbie)
 // passport config 
 // Use the existing connection 
 // The Account model  
-var Account =require('./models/account')); 
+var Account =require('./models/account'); 
  
 passport.use(new LocalStrategy(Account.authenticate())); 
 passport.serializeUser(Account.serializeUser()); 
@@ -104,9 +115,9 @@ module.exports = app;
 async function recreateDB(){
  // Delete everything
  await Costume.deleteMany();
- let instance1 = new Costume({costume_type:"ghost", size:'small', cost:25.4});
- let instance2 = new Costume({costume_type:"baby", size:'extra small', cost:20.2});
- let instance3 = new Costume({costume_type:"men", size:'large', cost:30.4});
+ let instance1 = new Costume({costume_type:"ghost", size:'small', cost:125.4});
+ let instance2 = new Costume({costume_type:"baby", size:'extra small', cost:129.2});
+ let instance3 = new Costume({costume_type:"men", size:'large', cost:112.4});
 
  instance1.save( function(err,doc) {
  if(err) return console.error(err);
